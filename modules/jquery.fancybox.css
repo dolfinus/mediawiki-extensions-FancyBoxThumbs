@@ -26,12 +26,14 @@
 
 .fancybox-skin {
 	position: relative;
-	background: #f9f9f9;
-	color: #444;
+	background: var(--background-color-overlay);
+	color: var(--color-base);
 	text-shadow: none;
 	-webkit-border-radius: 4px;
 	   -moz-border-radius: 4px;
 	        border-radius: 4px;
+	padding: 20px!important;
+	padding-bottom: 13px!important;
 }
 
 .fancybox-opened {
@@ -57,7 +59,7 @@
 }
 
 .fancybox-error {
-	color: #444;
+	color: var(--color-destructive);
 	font: 14px/20px "Helvetica Neue",Helvetica,Arial,sans-serif;
 	margin: 0;
 	padding: 15px;
@@ -246,4 +248,55 @@
 	padding: 10px;
 	background: #000;
 	background: rgba(0, 0, 0, .8);
+}
+
+div.fancybox-inner .gallerytext{
+text-align:center;
+margin-top: 10px;
+display: block!important;
+}
+
+div.fancybox-title{
+    display: flex;
+    flex-flow: wrap;
+    text-align: center;
+}
+
+.fancybox-title .author,
+.fancybox-title .name,
+.fancybox-title .src {
+    flex-grow: 1;
+    flex-basis: 10px;
+}
+
+.fancybox-title .description {
+  text-align: center;
+  width: 100%;
+  margin-bottom: 0.3em;
+}
+
+.fancybox-title .url{
+    display:none;
+}
+
+.zoom {
+  cursor: zoom-in!important;
+  cursor: -moz-zoom-in!important;
+  cursor: -webkit-zoom-in!important;
+}
+
+.threed.fancybox a {
+  pointer-events: none;
+  cursor: default;
+}
+
+.gallerytext p {
+  word-wrap: normal;
+  color: var(--color-base);
+}
+
+.gallerytext .name,
+.gallerytext .author,
+.gallerytext .src {
+  display:none;
 }

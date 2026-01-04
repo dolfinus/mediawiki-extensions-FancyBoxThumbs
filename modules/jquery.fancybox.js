@@ -79,11 +79,11 @@
 			arrows     : true,
 			closeBtn   : true,
 			closeClick : false,
-			nextClick  : false,
+			nextClick  : true,
 			mouseWheel : true,
 			autoPlay   : false,
-			playSpeed  : 3000,
-			preload    : 3,
+			playSpeed  : 2000,
+			preload    : 6,
 			modal      : false,
 			loop       : true,
 
@@ -147,27 +147,27 @@
 			// Properties for each animation type
 			// Opening fancyBox
 			openEffect  : 'fade', // 'elastic', 'fade' or 'none'
-			openSpeed   : 250,
+			openSpeed   : 150,
 			openEasing  : 'swing',
 			openOpacity : true,
 			openMethod  : 'zoomIn',
 
 			// Closing fancyBox
 			closeEffect  : 'fade', // 'elastic', 'fade' or 'none'
-			closeSpeed   : 250,
+			closeSpeed   : 150,
 			closeEasing  : 'swing',
 			closeOpacity : true,
 			closeMethod  : 'zoomOut',
 
 			// Changing next gallery item
 			nextEffect : 'elastic', // 'elastic', 'fade' or 'none'
-			nextSpeed  : 250,
+			nextSpeed  : 150,
 			nextEasing : 'swing',
 			nextMethod : 'changeIn',
 
 			// Changing previous gallery item
 			prevEffect : 'elastic', // 'elastic', 'fade' or 'none'
-			prevSpeed  : 250,
+			prevSpeed  : 150,
 			prevEasing : 'swing',
 			prevMethod : 'changeOut',
 
@@ -438,7 +438,7 @@
 				stop = function () {
 					clear();
 
-					D.unbind('.player');
+					D.off('.player');
 
 					F.player.isActive = false;
 
@@ -448,7 +448,7 @@
 					if (F.current && (F.current.loop || F.current.index < F.group.length - 1)) {
 						F.player.isActive = true;
 
-						D.bind({
+						D.on({
 							'onCancel.player beforeClose.player' : stop,
 							'onUpdate.player'   : set,
 							'beforeLoad.player' : clear
@@ -577,6 +577,7 @@
 				F.trigger('onUpdate');
 
 				didUpdate = null;
+				
 
 			}, (anyway && !isTouch ? 0 : 300));
 		},
@@ -598,7 +599,7 @@
 		},
 
 		hideLoading: function () {
-			D.unbind('.loading');
+			D.off('.loading');
 
 			$('#fancybox-loading').remove();
 		},
@@ -611,7 +612,7 @@
 			el = $('<div id="fancybox-loading"><div></div></div>').click(F.cancel).appendTo('body');
 
 			// If user will press the escape-button, the request will be canceled
-			D.bind('keydown.loading', function(e) {
+			D.on('keydown.loading', function(e) {
 				if ((e.which || e.keyCode) === 27) {
 					e.preventDefault();
 
@@ -653,11 +654,11 @@
 		// Unbind the keyboard / clicking actions
 		unbindEvents: function () {
 			if (F.wrap && isQuery(F.wrap)) {
-				F.wrap.unbind('.fb');
+				F.wrap.off('.fb');
 			}
 
-			D.unbind('.fb');
-			W.unbind('.fb');
+			D.off('.fb');
+			W.off('.fb');
 		},
 
 		bindEvents: function () {
@@ -670,12 +671,13 @@
 
 			// Changing document height on iOS devices triggers a 'resize' event,
 			// that can change document height... repeating infinitely
-			W.bind('orientationchange.fb' + (isTouch ? '' : ' resize.fb') + (current.autoCenter && !current.locked ? ' scroll.fb' : ''), F.update);
+			W.on('orientationchange.fb' + (isTouch ? '' : ' resize.fb') + (current.autoCenter && !current.locked ? ' scroll.fb' : ''), F.update);
 
 			keys = current.keys;
 
 			if (keys) {
-				D.bind('keydown.fb', function (e) {
+			  D.off('keydown.fb');
+				D.on('keydown.fb', function (e) {
 					var code   = e.which || e.keyCode,
 						target = e.target || e.srcElement;
 
@@ -706,7 +708,7 @@
 			}
 
 			if ($.fn.mousewheel && current.mouseWheel) {
-				F.wrap.bind('mousewheel.fb', function (e, delta, deltaX, deltaY) {
+				F.wrap.on('mousewheel.fb', function (e, delta, deltaX, deltaY) {
 					var target = e.target || null,
 						parent = $(target),
 						canScroll = false;
@@ -723,10 +725,9 @@
 					if (delta !== 0 && !canScroll) {
 						if (F.group.length > 1 && !current.canShrink) {
 							if (deltaY > 0 || deltaX > 0) {
-								F.prev( deltaY > 0 ? 'down' : 'left' );
-
+								F.prev( 'right' );
 							} else if (deltaY < 0 || deltaX < 0) {
-								F.next( deltaY < 0 ? 'up' : 'right' );
+								F.next( 'left');
 							}
 
 							e.preventDefault();
@@ -976,6 +977,7 @@
 						F.hideLoading();
 					}
 				},
+				cache: true,
 				success: function (data, textStatus) {
 					if (textStatus === 'success') {
 						coming.content = data;
@@ -993,7 +995,7 @@
 					.attr('src', coming.href);
 
 			// This helps IE
-			$(coming.wrap).bind('onReset', function () {
+			$(coming.wrap).on('onReset', function () {
 				try {
 					$(this).find('iframe').hide().attr('src', '//about:blank').end().empty();
 				} catch (e) {}
@@ -1007,7 +1009,7 @@
 
 					// iOS will lose scrolling if we resize
 					if (!isTouch) {
-						$(this).bind('load.fb', F.update);
+						$(this).on('load.fb', F.update);
 					}
 
 					// Without this trick:
@@ -1108,7 +1110,7 @@
 
 						content = content.show().detach();
 
-						current.wrap.bind('onReset', function () {
+						current.wrap.on('onReset', function () {
 							if ($(this).find(content).length) {
 								content.hide().replaceAll( content.data(placeholder) ).data(placeholder, false);
 							}
@@ -1432,7 +1434,7 @@
 
 			// Assign a click event
 			if ( current.closeClick || (current.nextClick && F.group.length > 1) ) {
-				F.inner.css('cursor', 'pointer').bind('click.fb', function(e) {
+				F.inner.css('cursor', 'pointer').on('click.fb', function(e) {
 					if (!$(e.target).is('a') && !$(e.target).parent().is('a')) {
 						e.preventDefault();
 
@@ -1443,7 +1445,7 @@
 
 			// Create a close button
 			if (current.closeBtn) {
-				$(current.tpl.closeBtn).appendTo(F.skin).bind('click.fb', function(e) {
+				$(current.tpl.closeBtn).appendTo(F.skin).on('click.fb', function(e) {
 					e.preventDefault();
 
 					F.close();
@@ -1453,11 +1455,11 @@
 			// Create navigation arrows
 			if (current.arrows && F.group.length > 1) {
 				if (current.loop || current.index > 0) {
-					$(current.tpl.prev).appendTo(F.outer).bind('click.fb', F.prev);
+					$(current.tpl.prev).appendTo(F.outer).on('click.fb', F.prev);
 				}
 
 				if (current.loop || current.index < F.group.length - 1) {
-					$(current.tpl.next).appendTo(F.outer).bind('click.fb', F.next);
+					$(current.tpl.next).appendTo(F.outer).on('click.fb', F.next);
 				}
 			}
 
@@ -1724,20 +1726,20 @@
 			opts = $.extend({}, this.defaults, opts);
 
 			if (this.overlay) {
-				this.overlay.unbind('.overlay').width('auto').height('auto');
+				this.overlay.off('.overlay').width('auto').height('auto');
 
 			} else {
 				this.create(opts);
 			}
 
 			if (!this.fixed) {
-				W.bind('resize.overlay', $.proxy( this.update, this) );
+				W.on('resize.overlay', $.proxy( this.update, this) );
 
 				this.update();
 			}
 
 			if (opts.closeClick) {
-				this.overlay.bind('click.overlay', function(e) {
+				this.overlay.on('click.overlay', function(e) {
 					if ($(e.target).hasClass('fancybox-overlay')) {
 						if (F.isActive) {
 							F.close();
@@ -1754,7 +1756,7 @@
 		close : function() {
 			$('.fancybox-overlay').remove();
 
-			W.unbind('resize.overlay');
+			W.off('resize.overlay');
 
 			this.overlay = null;
 
@@ -1936,10 +1938,10 @@
 		index   = options.index || 0;
 
 		if (!selector || options.live === false) {
-			that.unbind('click.fb-start').bind('click.fb-start', run);
+			that.off('click.fb-start').on('click.fb-start', run);
 
 		} else {
-			D.undelegate(selector, 'click.fb-start').delegate(selector + ":not('.fancybox-item, .fancybox-nav')", 'click.fb-start', run);
+			D.off('click.fb-start',selector).on('click.fb-start', selector + ":not('.fancybox-item, .fancybox-nav')", run);
 		}
 
 		this.filter('[data-fancybox-start=1]').trigger('click');
